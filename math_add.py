@@ -28,20 +28,37 @@ Side Rect (Inches):
 +--------------+
 Width & Height of one slide is about 10 & 7.5
 """
-# const values
-SLIDE_W, SLIDE_H = 10, 7.5
-# rows and columns
+
+# --------------------------------------------------------------
+# custom variables
+# --------------------------------------------------------------
 ROWS = 3
-COLS = 6
+COLS = 5
+PAGE_CONTENT_STYLE = [
+    {'op': 'minus', 'result_on_top': True, 'upper_limit': 10},
+    {'op': 'minus', 'result_on_top': False, 'upper_limit': 10},
+    {'op': 'add', 'result_on_top': True, 'upper_limit': 10},
+    {'op': 'add', 'result_on_top': False, 'upper_limit': 10},
+    {'op': 'minus', 'result_on_top': False, 'upper_limit': 10},
+]
+
+# --------------------------------------------------------------
+# CONST VARIABLES. DO NOT MODIFY!
+# --------------------------------------------------------------
+SLIDE_W, SLIDE_H = 10, 7.5
 # rect of one family
-FAMILY_W, FAMILY_H = 0.6, 0.8
+FAMILY_W, FAMILY_H = 1.2, 1.5
 # Rect of TextBox in a family
 TEXT_RECT_SIZE = (0.4, 0.4)
+MARGIN_CONNECTOR = 0.01
 
 MARGIN_W = round((SLIDE_W-COLS*FAMILY_W)/(COLS+1), 2)
 MARGIN_H = round((SLIDE_H-ROWS*FAMILY_H)/(ROWS+1), 2)
 BODY_RECT_TOP = MARGIN_H
 BODY_RECT_LEFT = MARGIN_W
+
+IMG_LB_RT = "res/LB-RT.png"
+IMG_LT_RB = "res/LT-RB.png"
 
 # ratio of random number
 RESULT_WEIGHT = {
@@ -133,88 +150,175 @@ def slide2():
     prs.save(output_filename)
 
 
-def new_slides(nm, op, upper_limit):
+def new_slides():
     """
     Create PPTX
-
-    :param nm: num of slide
-    :param op: add/minus/multi/division
-    :param upper_limit: max result of the operation
-    :return:
     """
-
-    if op == 'add':
-        new_add(nm, upper_limit)
-    elif op == 'minus':
-        pass
-    elif op == 'multi':
-        pass
-    elif op == 'division':
-        pass
-    else:
-        raise Exception('Unsupported operation !')
-
-
-def new_add(nm, upper_limit):
-    i = 0
-    while i < nm:
-        blank_slide_layout = prs.slide_layouts[i]
-        slide = prs.slides.add_slide(blank_slide_layout)
-        _clean_default_placeholders(slide)
-        _draw_side(i, slide, upper_limit)
-        i += 1
+    for i in range(len(PAGE_CONTENT_STYLE)):
+        page_conf = PAGE_CONTENT_STYLE[i]
+        op = page_conf['op']
+        upper_limit = page_conf['upper_limit']
+        if op == 'add':
+            new_add(i, page_conf)
+        elif op == 'minus':
+            new_add(i, page_conf)
+        elif op == 'multi':
+            pass
+        elif op == 'division':
+            pass
+        else:
+            raise Exception('Unsupported operation !')
 
 
-def _draw_side(page, slide, upper_limit):
-    print('slide ' + str(page))
+def new_add(slide_index, page_conf):
+    blank_slide_layout = prs.slide_layouts[0]
+    slide = prs.slides.add_slide(blank_slide_layout)
+    _clean_default_placeholders(slide)
+    _draw_side(slide_index, slide, page_conf)
+
+
+def _draw_side(slide_index, slide, page_conf):
+    print('slide ' + str(slide_index))
     for i in range(0, ROWS):
-        # resultOnTop = False if random.randint(0, 1) == 0 else True
-        resultOnTop = False
         for j in range(0, COLS):
             result = _rand_result(1)
             factor1 = _rand_integer((0, result))
             factor2 = result - factor1
             print('[{}][{}], result = {}'.format(i, j, result))
-            _draw_tb(
-                resultOnTop, True, factor1, factor2, result,
+            _draw_family(
+                page_conf['result_on_top'], page_conf['op'], factor1, factor2, result,
                 (BODY_RECT_TOP + (FAMILY_H + MARGIN_H) * i, BODY_RECT_LEFT + (FAMILY_W + MARGIN_W) * j),
                 slide
             )
 
 
-def _draw_tb(resultOnTop, isAdd, factor1, factor2, result, pos, slide):
+def _draw_family(resultOnTop, op, factor1, factor2, result, pos, slide):
     family_top = pos[0]
     family_left = pos[1]
 
-    if isAdd is True:
+    if op == 'add' or op == 'minus':
+        # Draw result , left and right factor
+        active_left = True if random.random() <= 0.5 else False
         if resultOnTop is True:
-            # add textbox
             tx_width = TEXT_RECT_SIZE[0]
             tx_height = TEXT_RECT_SIZE[1]
-            tx_left = family_left + (FAMILY_W - tx_width)/2
+            tx_left = family_left + (FAMILY_W - tx_width) / 2
             tx_top = family_top
+            left_tx_width = TEXT_RECT_SIZE[0]
+            left_tx_height = TEXT_RECT_SIZE[1]
+            left_tx_left = family_left
+            left_tx_top = family_top + (FAMILY_H - tx_height)
+            right_tx_width = TEXT_RECT_SIZE[0]
+            right_tx_height = TEXT_RECT_SIZE[1]
+            right_tx_left = family_left + (FAMILY_W - tx_width)
+            right_tx_top = family_top + (FAMILY_H - tx_height)
+
+            # location for connector pic
+            _img_height = FAMILY_H - TEXT_RECT_SIZE[1]*2 - MARGIN_CONNECTOR*2
+            left_conn_from = {'x': family_left + TEXT_RECT_SIZE[0]/2,
+                              'y': family_top + (FAMILY_H - TEXT_RECT_SIZE[1])}
+            left_conn_to = {'x': family_left + FAMILY_W/2,
+                            'y': family_top + TEXT_RECT_SIZE[1]}
+            left_img = IMG_LB_RT
+            right_conn_from = {'x': family_left + FAMILY_W/2,
+                               'y': family_top + TEXT_RECT_SIZE[1]}
+            right_conn_to = {'x': family_left + (FAMILY_W - TEXT_RECT_SIZE[0]/2),
+                             'y': family_top + (FAMILY_H - TEXT_RECT_SIZE[1])}
+            right_img = IMG_LT_RB
+            _draw_connector(slide, left_conn_from, left_conn_to, _img_height, left_img, "to")
+            _draw_connector(slide, right_conn_from, right_conn_to, _img_height, right_img, "from")
         else:
-            # add textbox
             tx_width = TEXT_RECT_SIZE[0]
             tx_height = TEXT_RECT_SIZE[1]
             tx_left = family_left + (FAMILY_W - tx_width) / 2
             tx_top = family_top + (FAMILY_H - tx_height)
-        # print("text box rect: {}, {}, {}, {}".format(tx_left, tx_top, tx_width, tx_height))
-        txBox = slide.shapes.add_textbox(
-            Inches(tx_left),
-            Inches(tx_top),
-            Inches(tx_width),
-            Inches(tx_height))
-        txBox.text = str(result)
-        txBox.line.color.rgb = RGBColor(0, 0, 0)
-        txBox.line.width = Pt(1.0)
-        txBox.text_frame.auto_size = MSO_AUTO_SIZE.TEXT_TO_FIT_SHAPE
-        txBox.text_frame.paragraphs[0].alignment = PP_ALIGN.CENTER
-        txBox.text_frame.vertical_anchor = MSO_ANCHOR.MIDDLE
-        # txBox.fill.solid()
-        # txBox.fill.fore_color.rgb = RGBColor(0, 0, 0)
-    else:
+            left_tx_width = TEXT_RECT_SIZE[0]
+            left_tx_height = TEXT_RECT_SIZE[1]
+            left_tx_left = family_left
+            left_tx_top = family_top
+            right_tx_width = TEXT_RECT_SIZE[0]
+            right_tx_height = TEXT_RECT_SIZE[1]
+            right_tx_left = family_left + (FAMILY_W - tx_width)
+            right_tx_top = family_top
+
+            # location for connector pic
+            _img_height = FAMILY_H - TEXT_RECT_SIZE[1] * 2 - MARGIN_CONNECTOR * 2
+            left_conn_from = {'x': family_left + TEXT_RECT_SIZE[0] / 2,
+                              'y': family_top + TEXT_RECT_SIZE[1]}
+            left_conn_to = {'x': family_left + FAMILY_W / 2,
+                            'y': family_top + (FAMILY_H - TEXT_RECT_SIZE[1])}
+            left_img = IMG_LT_RB
+            right_conn_from = {'x': family_left + FAMILY_W / 2,
+                               'y': family_top + (FAMILY_H - TEXT_RECT_SIZE[1])}
+            right_conn_to = {'x': family_left + (FAMILY_W - TEXT_RECT_SIZE[0] / 2),
+                             'y': family_top + TEXT_RECT_SIZE[1]}
+            right_img = IMG_LB_RT
+            _draw_connector(slide, left_conn_from, left_conn_to, _img_height, left_img, "to")
+            _draw_connector(slide, right_conn_from, right_conn_to, _img_height, right_img, "from")
+
+        txt_result, txt_left, txt_right = '', factor1, factor2
+        if op == 'minus':
+            txt_result = result
+            if active_left is True:
+                txt_right = ''
+            else:
+                txt_left = ''
+
+        # result
+        _draw_textbox(slide, tx_left, tx_top, tx_width, tx_height, txt_result)
+        # left
+        _draw_textbox(slide, left_tx_left, left_tx_top, left_tx_width, left_tx_height, txt_left)
+        # right
+        _draw_textbox(slide, right_tx_left, right_tx_top, right_tx_width, right_tx_height, txt_right)
+        # if active_left is True:
+        #     # left
+        #     _draw_textbox(slide, left_tx_left, left_tx_top, left_tx_width, left_tx_height, factor1)
+        #     # right
+        #     _draw_textbox(slide, right_tx_left, right_tx_top, right_tx_width, right_tx_height, "")
+        # else:
+        #     # left
+        #     _draw_textbox(slide, left_tx_left, left_tx_top, left_tx_width, left_tx_height, "")
+        #     # right
+        #     _draw_textbox(slide, right_tx_left, right_tx_top, right_tx_width, right_tx_height, factor2)
+    elif op == 'multi':
         pass
+    elif op == 'division':
+        pass
+
+
+def _draw_textbox(slide, left, top, width, height, text):
+    txBox = slide.shapes.add_textbox(
+        Inches(left),
+        Inches(top),
+        Inches(width),
+        Inches(height))
+    txBox.text = str(text)
+    txBox.line.color.rgb = RGBColor(0, 0, 0)
+    txBox.line.width = Pt(1.0)
+    txBox.text_frame.auto_size = MSO_AUTO_SIZE.TEXT_TO_FIT_SHAPE
+    txBox.text_frame.paragraphs[0].alignment = PP_ALIGN.CENTER
+    txBox.text_frame.vertical_anchor = MSO_ANCHOR.MIDDLE
+    # txBox.fill.solid()
+    # txBox.fill.fore_color.rgb = RGBColor(0, 0, 0)
+
+
+def _draw_connector(slide, loc_from, loc_to, height, img, alignLoc):
+    _rect = [loc_to['x'] - loc_from['x'], abs(loc_to['y'] - loc_from['y'])]
+
+    pic_left, pic_top = Inches(0), Inches(0)
+    pic_height = Inches(height)
+
+    if loc_to['y'] < loc_from['y']:
+        if alignLoc == "from":
+            pic_left, pic_top = Inches(loc_from['x']), Inches(loc_from['y'] - _rect[1])
+        elif alignLoc == "to":
+            pic_left, pic_top = Inches(loc_to['x'] - _rect[0] - 0.1), Inches(loc_to['y'])
+    else:
+        if alignLoc == "from":
+            pic_left, pic_top = Inches(loc_from['x']), Inches(loc_from['y'])
+        elif alignLoc == "to":
+            pic_left, pic_top = Inches(loc_to['x'] - _rect[0] - 0.1), Inches(loc_to['y'] - _rect[1])
+    pic = slide.shapes.add_picture(img, pic_left, pic_top, height=pic_height)
 
 
 def _rand_result(minnum):
@@ -265,5 +369,5 @@ if __name__ == "__main__":
     # slide2()
 
     _init()
-    new_slides(2, "add", 10)
+    new_slides()
     prs.save(output_filename)
