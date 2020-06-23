@@ -26,7 +26,8 @@ Side Rect (Inches):
 |              |    7.5 
 |              |
 +--------------+
-Width & Height of one slide is about 10 & 7.5
+Width & Height of one slide is about 10 & 7.5, and width : height is 4 : 3
+
 """
 
 # --------------------------------------------------------------
@@ -36,10 +37,10 @@ ROWS = 3
 COLS = 5
 PAGE_CONTENT_STYLE = [
     {'op': 'minus', 'result_on_top': True, 'upper_limit': 10},
-    {'op': 'minus', 'result_on_top': False, 'upper_limit': 10},
     {'op': 'add', 'result_on_top': True, 'upper_limit': 10},
-    {'op': 'add', 'result_on_top': False, 'upper_limit': 10},
     {'op': 'minus', 'result_on_top': False, 'upper_limit': 10},
+    {'op': 'add', 'result_on_top': False, 'upper_limit': 10},
+    {'op': 'minus', 'result_on_top': True, 'upper_limit': 10},
 ]
 
 # --------------------------------------------------------------
