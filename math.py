@@ -66,14 +66,14 @@ RESULT_WEIGHT = {
     0: 1,
     1: 1,
     2: 1,
-    3: 1,
-    4: 1,
-    5: 1,
-    6: 3,
-    7: 3,
-    8: 3,
-    9: 3,
-    10: 3
+    3: 2,
+    4: 3,
+    5: 3,
+    6: 4,
+    7: 4,
+    8: 4,
+    9: 5,
+    10: 5
 }
 
 RESULT_RATIO_MAP = list(range(0, 100))
@@ -356,6 +356,8 @@ def _init():
         acc_ratio += ratio_in_100
         if acc_ratio > 100:
             ratio_in_100 -= (acc_ratio - ratio_in_100)
+        if k == len(RESULT_WEIGHT)-1 and acc_ratio < 100:
+            ratio_in_100 += 100 - acc_ratio
         i = 0
         while i < ratio_in_100:
             # print("{} -> {}".format(cur_index, k))
