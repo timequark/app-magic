@@ -35,18 +35,39 @@ Width & Height of one slide is about 10 & 7.5, and width : height is 4 : 3
 # --------------------------------------------------------------
 ROWS = 3
 COLS = 5
+RESULT_LOWER_LIMIT = 1
 PAGE_CONTENT_STYLE = [
-    {'op': 'minus', 'result_on_top': True, 'upper_limit': 10},
-    {'op': 'add', 'result_on_top': True, 'upper_limit': 10},
-    {'op': 'minus', 'result_on_top': False, 'upper_limit': 10},
-    {'op': 'add', 'result_on_top': False, 'upper_limit': 10},
-    {'op': 'minus', 'result_on_top': True, 'upper_limit': 10},
-    {'op': 'add', 'result_on_top': False, 'upper_limit': 10},
-    {'op': 'minus', 'result_on_top': True, 'upper_limit': 10},
-    {'op': 'add', 'result_on_top': False, 'upper_limit': 10},
-    {'op': 'minus', 'result_on_top': True, 'upper_limit': 10},
-    {'op': 'add', 'result_on_top': False, 'upper_limit': 10},
+    {'op': 'minus', 'result_on_top': True, 'result_upper_limit': 10},
+    {'op': 'add', 'result_on_top': True, 'result_upper_limit': 10},
+    # {'op': 'minus', 'result_on_top': False, 'result_upper_limit': 10},
+    # {'op': 'add', 'result_on_top': False, 'result_upper_limit': 10},
+    # {'op': 'minus', 'result_on_top': True, 'result_upper_limit': 10},
+    # {'op': 'add', 'result_on_top': False, 'result_upper_limit': 10},
+    # {'op': 'minus', 'result_on_top': True, 'result_upper_limit': 10},
+    # {'op': 'add', 'result_on_top': False, 'result_upper_limit': 10},
+    # {'op': 'minus', 'result_on_top': True, 'result_upper_limit': 10},
+    # {'op': 'add', 'result_on_top': False, 'result_upper_limit': 10},
 ]
+
+# Weight of random number
+# Rules:
+# - First element means the min number.
+# - Last element means the max number
+# - Element weight uses the the previous weight of element
+RESULT_WEIGHT = {
+    0: 1,
+    #1: 1,
+    #2: 1,
+    3: 2,
+    4: 3,
+    #5: 3,
+    6: 4,
+    7: 6,
+    #8: 5,
+    #9: 5,
+    10: 6,
+    #20: 8
+}
 
 # --------------------------------------------------------------
 # CONST VARIABLES. DO NOT MODIFY!
@@ -66,22 +87,10 @@ BODY_RECT_LEFT = MARGIN_W
 IMG_LB_RT = "res/LB-RT.png"
 IMG_LT_RB = "res/LT-RB.png"
 
-# ratio of random number
-RESULT_WEIGHT = {
-    0: 1,
-    1: 1,
-    2: 1,
-    3: 2,
-    4: 3,
-    5: 3,
-    6: 4,
-    7: 5,
-    8: 5,
-    9: 5,
-    10: 5
-}
-
 RESULT_RATIO_MAP = list(range(0, 100))
+_number_keys = sorted(RESULT_WEIGHT.keys())
+NUMBER_MIN = _number_keys[0]
+NUMBER_MAX = _number_keys[-1]
 
 prs = Presentation()
 
@@ -163,7 +172,6 @@ def new_slides():
     for i in range(len(PAGE_CONTENT_STYLE)):
         page_conf = PAGE_CONTENT_STYLE[i]
         op = page_conf['op']
-        upper_limit = page_conf['upper_limit']
         if op == 'add':
             new_add(i, page_conf)
         elif op == 'minus':
@@ -184,10 +192,14 @@ def new_add(slide_index, page_conf):
 
 
 def _draw_side(slide_index, slide, page_conf):
-    print('slide ' + str(slide_index))
+    max_result = NUMBER_MAX if not 'result_upper_limit' in page_conf else page_conf['result_upper_limit']
+    max_result = min(max_result, NUMBER_MAX)
+    print('slide {}, lower_limit is {}, result_upper_limit is {}'.format(slide_index, RESULT_LOWER_LIMIT, max_result))
     for i in range(0, ROWS):
         for j in range(0, COLS):
-            result = _rand_result(1)
+            index_a = RESULT_RATIO_MAP.index(RESULT_LOWER_LIMIT)
+            index_b = RESULT_RATIO_MAP.index(max_result)
+            result = _rand_result(1, index_a, index_b)
             factor1 = _rand_integer((0, result))
             factor2 = result - factor1
             print('[{}][{}], result = {}'.format(i, j, result))
@@ -327,12 +339,10 @@ def _draw_connector(slide, loc_from, loc_to, height, img, alignLoc):
     pic = slide.shapes.add_picture(img, pic_left, pic_top, height=pic_height)
 
 
-def _rand_result(minnum):
-    rand_index = random.randint(0, 99)
-    rslt = RESULT_RATIO_MAP[rand_index]
-    # if rslt < minnum:
-    #     rslt = _rand_result(minnum)
-    return rslt if rslt >= minnum else _rand_result(minnum)
+def _rand_result(lower_limit, index_a, index_b):
+    _index = random.randint(index_a, index_b)
+    rslt = RESULT_RATIO_MAP[_index]
+    return rslt if rslt >= lower_limit else _rand_result(lower_limit, index_a, index_b)
 
 
 def _rand_integer(rng):
@@ -349,18 +359,36 @@ def _clean_default_placeholders(slide):
 
 
 def _init():
-    totalweight = 0
-    for w in RESULT_WEIGHT.values():
-        totalweight += w
+    global RESULT_WEIGHT
+    totalweight = 0.0
+    number_keys = sorted(RESULT_WEIGHT.keys())
+    min_number = number_keys[0]
+    max_number = number_keys[-1]
+    prev_weight = RESULT_WEIGHT[number_keys[0]]
+    while min_number <= max_number:
+        if min_number in number_keys:
+            prev_weight = RESULT_WEIGHT[min_number]
+        else:
+            RESULT_WEIGHT[min_number] = prev_weight
+        totalweight += prev_weight
+        min_number += 1
+
+    # sort dictionary RESULT_WEIGHT
+    _sorted_result_weight = {}
+    ss = sorted(RESULT_WEIGHT.items())
+    [_sorted_result_weight.update({k: v}) for k, v in ss]
+    RESULT_WEIGHT = _sorted_result_weight
+
     acc_ratio = 0
     cur_index = 0
     for k, v in RESULT_WEIGHT.items():
-        # print("{} ==== {}".format(k, v))
-        ratio_in_100 = round((v * 100)/totalweight)
-        # print("ratio_in_100 = {}".format(ratio_in_100))
+        ratio_in_100 = max(1, int((v * 100)/totalweight))
         acc_ratio += ratio_in_100
+        print("number = {}, ratio_in_100 = {}".format(k, ratio_in_100))
+        # if k == 30:
+        #     print('')
         if acc_ratio > 100:
-            ratio_in_100 -= (acc_ratio - ratio_in_100)
+            ratio_in_100 -= (acc_ratio - 100)
         if k == len(RESULT_WEIGHT)-1 and acc_ratio < 100:
             ratio_in_100 += 100 - acc_ratio
         i = 0
