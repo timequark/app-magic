@@ -41,6 +41,11 @@ PAGE_CONTENT_STYLE = [
     {'op': 'minus', 'result_on_top': False, 'upper_limit': 10},
     {'op': 'add', 'result_on_top': False, 'upper_limit': 10},
     {'op': 'minus', 'result_on_top': True, 'upper_limit': 10},
+    {'op': 'add', 'result_on_top': False, 'upper_limit': 10},
+    {'op': 'minus', 'result_on_top': True, 'upper_limit': 10},
+    {'op': 'add', 'result_on_top': False, 'upper_limit': 10},
+    {'op': 'minus', 'result_on_top': True, 'upper_limit': 10},
+    {'op': 'add', 'result_on_top': False, 'upper_limit': 10},
 ]
 
 # --------------------------------------------------------------
@@ -70,8 +75,8 @@ RESULT_WEIGHT = {
     4: 3,
     5: 3,
     6: 4,
-    7: 4,
-    8: 4,
+    7: 5,
+    8: 5,
     9: 5,
     10: 5
 }
