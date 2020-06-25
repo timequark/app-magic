@@ -2,9 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="7eb2205a-5e0e-4dc9-844a-9b733b74ee4e" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/magic.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/magic.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/math.py" beforeDir="false" afterPath="$PROJECT_DIR$/math.py" afterDir="false" />
     </list>
@@ -185,46 +182,46 @@
       <screen x="0" y="0" width="1280" height="760" />
     </state>
     <state x="359" y="0" key="#main/0.0.1280.760@0.0.1280.760" timestamp="1592647211678" />
-    <state width="736" height="438" key="DebuggerActiveHint" timestamp="1592844056132">
+    <state width="736" height="438" key="DebuggerActiveHint" timestamp="1593063384250">
       <screen x="0" y="0" width="1280" height="760" />
     </state>
-    <state width="736" height="438" key="DebuggerActiveHint/0.0.1280.760@0.0.1280.760" timestamp="1592844056132" />
+    <state width="736" height="438" key="DebuggerActiveHint/0.0.1280.760@0.0.1280.760" timestamp="1593063384250" />
     <state x="420" y="133" key="FileChooserDialogImpl" timestamp="1592647285706">
       <screen x="0" y="0" width="1280" height="760" />
     </state>
     <state x="420" y="133" key="FileChooserDialogImpl/0.0.1280.760@0.0.1280.760" timestamp="1592647285706" />
-    <state width="1258" height="271" key="GridCell.Tab.0.bottom" timestamp="1593026491948">
+    <state width="1258" height="31" key="GridCell.Tab.0.bottom" timestamp="1593063693006">
       <screen x="0" y="0" width="1280" height="760" />
     </state>
-    <state width="1258" height="271" key="GridCell.Tab.0.bottom/0.0.1280.760@0.0.1280.760" timestamp="1593026491948" />
-    <state width="1258" height="271" key="GridCell.Tab.0.center" timestamp="1593026491948">
+    <state width="1258" height="31" key="GridCell.Tab.0.bottom/0.0.1280.760@0.0.1280.760" timestamp="1593063693006" />
+    <state width="1258" height="31" key="GridCell.Tab.0.center" timestamp="1593063693006">
       <screen x="0" y="0" width="1280" height="760" />
     </state>
-    <state width="1258" height="271" key="GridCell.Tab.0.center/0.0.1280.760@0.0.1280.760" timestamp="1593026491948" />
-    <state width="1258" height="271" key="GridCell.Tab.0.left" timestamp="1593026491948">
+    <state width="1258" height="31" key="GridCell.Tab.0.center/0.0.1280.760@0.0.1280.760" timestamp="1593063693006" />
+    <state width="1258" height="31" key="GridCell.Tab.0.left" timestamp="1593063693006">
       <screen x="0" y="0" width="1280" height="760" />
     </state>
-    <state width="1258" height="271" key="GridCell.Tab.0.left/0.0.1280.760@0.0.1280.760" timestamp="1593026491948" />
-    <state width="1258" height="271" key="GridCell.Tab.0.right" timestamp="1593026491948">
+    <state width="1258" height="31" key="GridCell.Tab.0.left/0.0.1280.760@0.0.1280.760" timestamp="1593063693006" />
+    <state width="1258" height="31" key="GridCell.Tab.0.right" timestamp="1593063693006">
       <screen x="0" y="0" width="1280" height="760" />
     </state>
-    <state width="1258" height="271" key="GridCell.Tab.0.right/0.0.1280.760@0.0.1280.760" timestamp="1593026491948" />
-    <state width="1258" height="271" key="GridCell.Tab.1.bottom" timestamp="1593026491949">
+    <state width="1258" height="31" key="GridCell.Tab.0.right/0.0.1280.760@0.0.1280.760" timestamp="1593063693006" />
+    <state width="1258" height="31" key="GridCell.Tab.1.bottom" timestamp="1593063695138">
       <screen x="0" y="0" width="1280" height="760" />
     </state>
-    <state width="1258" height="271" key="GridCell.Tab.1.bottom/0.0.1280.760@0.0.1280.760" timestamp="1593026491949" />
-    <state width="1258" height="271" key="GridCell.Tab.1.center" timestamp="1593026491949">
+    <state width="1258" height="31" key="GridCell.Tab.1.bottom/0.0.1280.760@0.0.1280.760" timestamp="1593063695138" />
+    <state width="1258" height="31" key="GridCell.Tab.1.center" timestamp="1593063695137">
       <screen x="0" y="0" width="1280" height="760" />
     </state>
-    <state width="1258" height="271" key="GridCell.Tab.1.center/0.0.1280.760@0.0.1280.760" timestamp="1593026491949" />
-    <state width="1258" height="271" key="GridCell.Tab.1.left" timestamp="1593026491948">
+    <state width="1258" height="31" key="GridCell.Tab.1.center/0.0.1280.760@0.0.1280.760" timestamp="1593063695137" />
+    <state width="1258" height="31" key="GridCell.Tab.1.left" timestamp="1593063695137">
       <screen x="0" y="0" width="1280" height="760" />
     </state>
-    <state width="1258" height="271" key="GridCell.Tab.1.left/0.0.1280.760@0.0.1280.760" timestamp="1593026491948" />
-    <state width="1258" height="271" key="GridCell.Tab.1.right" timestamp="1593026491949">
+    <state width="1258" height="31" key="GridCell.Tab.1.left/0.0.1280.760@0.0.1280.760" timestamp="1593063695137" />
+    <state width="1258" height="31" key="GridCell.Tab.1.right" timestamp="1593063695137">
       <screen x="0" y="0" width="1280" height="760" />
     </state>
-    <state width="1258" height="271" key="GridCell.Tab.1.right/0.0.1280.760@0.0.1280.760" timestamp="1593026491949" />
+    <state width="1258" height="31" key="GridCell.Tab.1.right/0.0.1280.760@0.0.1280.760" timestamp="1593063695137" />
     <state x="17" y="0" width="1204" height="739" key="SettingsEditor" timestamp="1593020117612">
       <screen x="0" y="0" width="1280" height="760" />
     </state>
@@ -244,7 +241,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="python-line">
           <url>file://$PROJECT_DIR$/math.py</url>
-          <line>610</line>
+          <line>604</line>
           <option name="timeStamp" value="1" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
@@ -259,18 +256,18 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/math.py</url>
-          <line>468</line>
+          <line>459</line>
           <option name="timeStamp" value="9" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/math.py</url>
-          <line>430</line>
+          <line>418</line>
           <option name="timeStamp" value="10" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/math.py</url>
-          <line>498</line>
-          <option name="timeStamp" value="11" />
+          <line>489</line>
+          <option name="timeStamp" value="13" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>

@@ -34,16 +34,16 @@ Width & Height of one slide is about 10 & 7.5, and width : height is 4 : 3
 # --------------------------------------------------------------
 # custom variables
 # --------------------------------------------------------------
-ROWS = 3
-COLS = 5
+ROWS = 2
+COLS = 3
 RESULT_LOWER_LIMIT = 1
 PAGE_CONTENT_STYLE = [
     {'op': 'minus', 'result_on_top': True, 'result_upper_limit': 10},
-    {'op': 'add', 'result_on_top': True, 'result_upper_limit': 10},
+    {'op': 'add', 'result_on_top': False, 'result_upper_limit': 10},
     {'op': 'minus', 'result_on_top': False, 'result_upper_limit': 10},
-    {'op': 'add', 'result_on_top': False, 'result_upper_limit': 10},
-    {'op': 'minus', 'result_on_top': True, 'result_upper_limit': 10},
-    {'op': 'add', 'result_on_top': False, 'result_upper_limit': 10},
+    {'op': 'add', 'result_on_top': True, 'result_upper_limit': 10},
+    # {'op': 'minus', 'result_on_top': True, 'result_upper_limit': 10},
+    # {'op': 'add', 'result_on_top': False, 'result_upper_limit': 10},
     # {'op': 'minus', 'result_on_top': True, 'result_upper_limit': 10},
     # {'op': 'add', 'result_on_top': False, 'result_upper_limit': 10},
     # {'op': 'minus', 'result_on_top': True, 'result_upper_limit': 10},
@@ -100,14 +100,14 @@ print(output_filename)
 #
 # Variables for goods
 #
-GOODS_FAMILY_W, GOODS_FAMILY_H = 2.0, 1.5
+GOODS_FAMILY_W, GOODS_FAMILY_H = 3.0, 1.0
 GOODS_MARGIN_W = round((SLIDE_W-COLS*GOODS_FAMILY_W)/(COLS+1), 2)
 GOODS_MARGIN_H = round((SLIDE_H-ROWS*GOODS_FAMILY_H)/(ROWS+1), 2)
 GOODS_BODY_RECT_TOP = GOODS_MARGIN_H
 GOODS_BODY_RECT_LEFT = GOODS_MARGIN_W
 GOODS_IMG_PIC_W, GOODS_IMG_PIC_H = 0.25, 0.25
 # Layout the pictures in Horizon then Vertical. Ignore the height of container currently
-GOODS_IMG_CONTAINER_W, GOODS_IMG_CONTAINER_H = GOODS_FAMILY_W*2/3, 0.0
+GOODS_IMG_CONTAINER_W, GOODS_IMG_CONTAINER_H = GOODS_FAMILY_W/2.2, 0.0
 GOODS_IMG_CONTAINER_PADDING_W, GOODS_IMG_CONTAINER_PADDING_H = 0.0, 0.0
 GOODS_IMG_PATH = [
     "res/fruit/apple01.png",
@@ -351,76 +351,64 @@ def _cb_draw_family_goods(resultOnTop, op, factor1, factor2, result, pos, slide)
         # Draw result , left and right factor
         show_factor1_on_left = True if random.random() <= 0.5 else False
         if resultOnTop is True:
-            tx_width = TEXT_RECT_SIZE[0]
-            tx_height = TEXT_RECT_SIZE[1]
-            tx_left = family_left + (GOODS_FAMILY_W - tx_width) / 2
-            tx_top = family_top
-            left_tx_width = TEXT_RECT_SIZE[0]
-            left_tx_height = TEXT_RECT_SIZE[1]
-            left_tx_left = family_left
-            left_tx_top = family_top + (GOODS_FAMILY_H - tx_height)
-            right_tx_width = TEXT_RECT_SIZE[0]
-            right_tx_height = TEXT_RECT_SIZE[1]
-            right_tx_left = family_left + (GOODS_FAMILY_W - tx_width)
-            right_tx_top = family_top + (GOODS_FAMILY_H - tx_height)
+            result_anchor_x = family_left + GOODS_FAMILY_W / 2
+            result_anchor_y = family_top
+
+            left_child_anchor_x = family_left + GOODS_FAMILY_W / 4
+            left_child_anchor_y = family_top + GOODS_FAMILY_H
+
+            right_child_anchor_x = family_left + GOODS_FAMILY_W * 3 / 4
+            right_child_anchor_y = family_top + GOODS_FAMILY_H
 
             # location for connector pic
-            _img_height = FAMILY_H - TEXT_RECT_SIZE[1]*2 - MARGIN_CONNECTOR*2
-            left_conn_from = {'x': family_left + TEXT_RECT_SIZE[0]/2,
-                              'y': family_top + (FAMILY_H - TEXT_RECT_SIZE[1])}
-            left_conn_to = {'x': family_left + FAMILY_W/2,
-                            'y': family_top + TEXT_RECT_SIZE[1]}
-            left_img = IMG_LB_RT
-            right_conn_from = {'x': family_left + FAMILY_W/2,
-                               'y': family_top + TEXT_RECT_SIZE[1]}
-            right_conn_to = {'x': family_left + (FAMILY_W - TEXT_RECT_SIZE[0]/2),
-                             'y': family_top + (FAMILY_H - TEXT_RECT_SIZE[1])}
-            right_img = IMG_LT_RB
-            _draw_connector(slide, left_conn_from, left_conn_to, _img_height, left_img, "to")
-            _draw_connector(slide, right_conn_from, right_conn_to, _img_height, right_img, "from")
+
         else:
-            tx_width = TEXT_RECT_SIZE[0]
-            tx_height = TEXT_RECT_SIZE[1]
-            tx_left = family_left + (FAMILY_W - tx_width) / 2
-            tx_top = family_top + (FAMILY_H - tx_height)
-            left_tx_width = TEXT_RECT_SIZE[0]
-            left_tx_height = TEXT_RECT_SIZE[1]
-            left_tx_left = family_left
-            left_tx_top = family_top
-            right_tx_width = TEXT_RECT_SIZE[0]
-            right_tx_height = TEXT_RECT_SIZE[1]
-            right_tx_left = family_left + (FAMILY_W - tx_width)
-            right_tx_top = family_top
+            result_anchor_x = family_left + GOODS_FAMILY_W / 2
+            result_anchor_y = family_top + GOODS_FAMILY_H
+
+            left_child_anchor_x = family_left + GOODS_FAMILY_W / 4
+            left_child_anchor_y = family_top
+
+            right_child_anchor_x = family_left + GOODS_FAMILY_W * 3 / 4
+            right_child_anchor_y = family_top
 
             # location for connector pic
-            _img_height = FAMILY_H - TEXT_RECT_SIZE[1] * 2 - MARGIN_CONNECTOR * 2
-            left_conn_from = {'x': family_left + TEXT_RECT_SIZE[0] / 2,
-                              'y': family_top + TEXT_RECT_SIZE[1]}
-            left_conn_to = {'x': family_left + FAMILY_W / 2,
-                            'y': family_top + (FAMILY_H - TEXT_RECT_SIZE[1])}
-            left_img = IMG_LT_RB
-            right_conn_from = {'x': family_left + FAMILY_W / 2,
-                               'y': family_top + (FAMILY_H - TEXT_RECT_SIZE[1])}
-            right_conn_to = {'x': family_left + (FAMILY_W - TEXT_RECT_SIZE[0] / 2),
-                             'y': family_top + TEXT_RECT_SIZE[1]}
-            right_img = IMG_LB_RT
-            _draw_connector(slide, left_conn_from, left_conn_to, _img_height, left_img, "to")
-            _draw_connector(slide, right_conn_from, right_conn_to, _img_height, right_img, "from")
 
-        txt_result, txt_left, txt_right = '', factor1, factor2
+        txt_result, txt_left, txt_right = '', '', ''
         if op == 'minus':
             txt_result = result
             if show_factor1_on_left is True:
+                txt_left = factor1
                 txt_right = ''
             else:
                 txt_left = ''
+                txt_right = factor1
+        else:
+            if show_factor1_on_left is True:
+                txt_left = factor1
+                txt_right = factor2
+            else:
+                txt_left = factor2
+                txt_right = factor1
 
         # result
-        _draw_textbox(slide, tx_left, tx_top, tx_width, tx_height, txt_result)
+        _draw_goods(slide, number=txt_result,
+                    anchor_x=result_anchor_x, anchor_y=result_anchor_y,
+                    anchor_side="bottom_middle" if resultOnTop is True else "top_middle",
+                    is_text=False if txt_result == result else True,
+                    img=GOODS_IMG_PATH[0])
         # left
-        _draw_textbox(slide, left_tx_left, left_tx_top, left_tx_width, left_tx_height, txt_left)
+        _draw_goods(slide, number=txt_left,
+                    anchor_x=left_child_anchor_x, anchor_y=left_child_anchor_y,
+                    anchor_side="top_middle" if resultOnTop is True else "bottom_middle",
+                    is_text=True if (txt_left == '' or txt_left == 0) else False,
+                    img=GOODS_IMG_PATH[0])
         # right
-        _draw_textbox(slide, right_tx_left, right_tx_top, right_tx_width, right_tx_height, txt_right)
+        _draw_goods(slide, number=txt_right,
+                    anchor_x=right_child_anchor_x, anchor_y=right_child_anchor_y,
+                    anchor_side="top_middle" if resultOnTop is True else "bottom_middle",
+                    is_text=True if (txt_right == '' or txt_right == 0) else False,
+                    img=GOODS_IMG_PATH[0])
     elif op == 'multi':
         pass
     elif op == 'division':
@@ -436,32 +424,35 @@ def _draw_goods(slide, number, anchor_x, anchor_y, anchor_side, is_text, img):
             tx_top = anchor_y
         elif anchor_side == "bottom_middle":
             tx_left = anchor_x - tx_width/2
-            tx_top = anchor_y - tx_height/2
+            tx_top = anchor_y - tx_height
         _draw_textbox(slide, tx_left, tx_top, tx_width, tx_height, number)
     else:
         if anchor_side == "top_middle":
-            '''
-                    (x,y)
-            ----------o---------
-            |                  |
-            |                  |
-            |                  |
-                     ...
-            '''
+            # anchor stands at top-middle
+            #         (x,y)
+            # ----------o---------
+            # |                  |
+            # |                  |
+            # |                  |
+            #          ...
+            #
             fromPos = {'x': anchor_x - GOODS_IMG_CONTAINER_W/2, 'y': anchor_y}
             _draw_goods_img(slide, number, fromPos, 'down',
                             GOODS_IMG_CONTAINER_PADDING_W, GOODS_IMG_CONTAINER_PADDING_H,
                             img, GOODS_IMG_PIC_W, GOODS_IMG_PIC_H)
         elif anchor_side == "bottom_middle":
-            '''
-                     ...
-            |                  |
-            |                  |
-            |                  |
-            ----------o---------
-                    (x,y)
-            '''
-            pass
+            # anchor stands at bottom-middle
+            #          ...
+            # |                  |
+            # |                  |
+            # |                  |
+            # ----------o---------
+            #         (x,y)
+            #
+            fromPos = {'x': anchor_x - GOODS_IMG_CONTAINER_W / 2, 'y': anchor_y}
+            _draw_goods_img(slide, number, fromPos, 'up',
+                            GOODS_IMG_CONTAINER_PADDING_W, GOODS_IMG_CONTAINER_PADDING_H,
+                            img, GOODS_IMG_PIC_W, GOODS_IMG_PIC_H)
 
 
 def _draw_goods_img(slide, number, fromPos, layoutDirect, padding_w, padding_h, img, img_w, img_h):
@@ -496,7 +487,10 @@ def test():
     slide = prs.slides.add_slide(blank_slide_layout)
     _clean_default_placeholders(slide)
     # _draw_goods(slide, 7, 0, 0, "bottom_middle", True, "")
-    _draw_goods(slide, 7, 0, 0, "top_middle", False, GOODS_IMG_PATH[0])
+    _draw_goods(slide, number=3, anchor_x=0, anchor_y=0, anchor_side="top_middle", is_text=False, img=GOODS_IMG_PATH[0])
+    slide = prs.slides.add_slide(blank_slide_layout)
+    _clean_default_placeholders(slide)
+    _draw_goods(slide, number=11, anchor_x=0, anchor_y=0, anchor_side="bottom_middle", is_text=False, img=GOODS_IMG_PATH[0])
 
 
 # --------------------------------------------------------------
@@ -615,5 +609,15 @@ if __name__ == "__main__":
     #     margin_h=MARGIN_H, margin_w=MARGIN_W,
     #     result_min=1, factor_min=0
     # )
-    test()
+
+    # test()
+
+    new_slides(
+        fn_draw_family=_cb_draw_family_goods,
+        body_rect_top=GOODS_BODY_RECT_TOP, body_rect_left=GOODS_BODY_RECT_LEFT,
+        family_h=GOODS_FAMILY_H, family_w=GOODS_FAMILY_W,
+        margin_h=GOODS_MARGIN_H, margin_w=GOODS_MARGIN_W,
+        result_min=1, factor_min=1
+    )
+
     prs.save(output_filename)
