@@ -2,12 +2,14 @@ import time
 import random
 import math
 from pptx import Presentation
-from pptx.util import Inches, Pt
+from pptx.util import Inches, Pt, Cm
 from pptx.dml.color import RGBColor
 from pptx.enum.text import PP_PARAGRAPH_ALIGNMENT as PP_ALIGN
 from pptx.enum.text import MSO_VERTICAL_ANCHOR as MSO_ANCHOR
 from pptx.enum.text import MSO_AUTO_SIZE
 from pptx.enum.shapes import MSO_AUTO_SHAPE_TYPE as MSO_SHAPE
+from pptx.enum.shapes import MSO_CONNECTOR_TYPE as MSO_CONNECTOR
+from pptx.enum.dml import MSO_FILL_TYPE as MSO_FILL
 
 '''
 1. Remove placeholders in slide
@@ -87,6 +89,8 @@ BODY_RECT_LEFT = MARGIN_W
 
 IMG_LB_RT = "res/LB-RT.png"
 IMG_LT_RB = "res/LT-RB.png"
+
+CONNECTOR_LINE_ADJUST = 0.05
 
 RESULT_RATIO_MAP = list(range(0, 100))
 _number_keys = sorted(RESULT_WEIGHT.keys())
@@ -360,7 +364,13 @@ def _cb_draw_family_goods(resultOnTop, op, factor1, factor2, result, pos, slide)
             right_child_anchor_x = family_left + GOODS_FAMILY_W * 3 / 4
             right_child_anchor_y = family_top + GOODS_FAMILY_H
 
-            # location for connector pic
+            # location for connector line
+            line_end_x = result_anchor_x
+            line_end_y = result_anchor_y + CONNECTOR_LINE_ADJUST
+            line_left_begin_x = left_child_anchor_x
+            line_left_begin_y = left_child_anchor_y - CONNECTOR_LINE_ADJUST
+            line_right_begin_x = right_child_anchor_x
+            line_right_begin_y = right_child_anchor_y - CONNECTOR_LINE_ADJUST
 
         else:
             result_anchor_x = family_left + GOODS_FAMILY_W / 2
@@ -373,7 +383,18 @@ def _cb_draw_family_goods(resultOnTop, op, factor1, factor2, result, pos, slide)
             right_child_anchor_y = family_top
 
             # location for connector pic
+            line_end_x = result_anchor_x
+            line_end_y = result_anchor_y - CONNECTOR_LINE_ADJUST
+            line_left_begin_x = left_child_anchor_x
+            line_left_begin_y = left_child_anchor_y + CONNECTOR_LINE_ADJUST
+            line_right_begin_x = right_child_anchor_x
+            line_right_begin_y = right_child_anchor_y + CONNECTOR_LINE_ADJUST
 
+        # connector line
+        _draw_straight_line(slide, line_left_begin_x, line_left_begin_y,
+                            line_end_x - CONNECTOR_LINE_ADJUST, line_end_y)
+        _draw_straight_line(slide, line_right_begin_x, line_right_begin_y,
+                            line_end_x + CONNECTOR_LINE_ADJUST, line_end_y)
         txt_result, txt_left, txt_right = '', '', ''
         if op == 'minus':
             txt_result = result
@@ -486,11 +507,7 @@ def test():
     blank_slide_layout = prs.slide_layouts[0]
     slide = prs.slides.add_slide(blank_slide_layout)
     _clean_default_placeholders(slide)
-    # _draw_goods(slide, 7, 0, 0, "bottom_middle", True, "")
-    _draw_goods(slide, number=3, anchor_x=0, anchor_y=0, anchor_side="top_middle", is_text=False, img=GOODS_IMG_PATH[0])
-    slide = prs.slides.add_slide(blank_slide_layout)
-    _clean_default_placeholders(slide)
-    _draw_goods(slide, number=11, anchor_x=0, anchor_y=0, anchor_side="bottom_middle", is_text=False, img=GOODS_IMG_PATH[0])
+    # _draw_goods(slide, number=3, anchor_x=0, anchor_y=0, anchor_side="top_middle", is_text=False, img=GOODS_IMG_PATH[0])
 
 
 # --------------------------------------------------------------
@@ -534,6 +551,15 @@ def _draw_connector(slide, loc_from, loc_to, height, img, alignLoc):
             pic_left, pic_top = Inches(loc_to['x'] - _rect[0] - 0.1), Inches(loc_to['y'] - _rect[1])
     # pic = slide.shapes.add_picture(img, pic_left, pic_top, height=pic_height)
     _draw_pic(slide, pic_left, pic_top, pic_height, img)
+
+
+def _draw_straight_line(slide, begin_x, begin_y, end_x, end_y):
+    connector = slide.shapes.add_connector(
+        MSO_CONNECTOR.STRAIGHT, Inches(begin_x), Inches(begin_y), Inches(end_x), Inches(end_y)
+    )
+    connector.shadow.inherit = False
+    connector.line.color.rgb = RGBColor(0, 0, 0)
+    connector.line.width = Pt(1.0)
 
 
 def _rand_result(lower_limit, index_a, index_b):
