@@ -1,3 +1,4 @@
+import sys, getopt
 import time
 import random
 import math
@@ -36,20 +37,22 @@ Width & Height of one slide is about 10 & 7.5, and width : height is 4 : 3
 # --------------------------------------------------------------
 # custom variables
 # --------------------------------------------------------------
-ROWS = 2
-COLS = 3
+# for TEXT type ROWS,COLS => 4, 5
+# for GOODS type ROWS, COLS => 3, 4
+ROWS = 4
+COLS = 5
 RESULT_LOWER_LIMIT = 1
 PAGE_CONTENT_STYLE = [
     {'op': 'minus', 'result_on_top': True, 'result_upper_limit': 10},
     {'op': 'add', 'result_on_top': False, 'result_upper_limit': 10},
     {'op': 'minus', 'result_on_top': False, 'result_upper_limit': 10},
     {'op': 'add', 'result_on_top': True, 'result_upper_limit': 10},
-    # {'op': 'minus', 'result_on_top': True, 'result_upper_limit': 10},
-    # {'op': 'add', 'result_on_top': False, 'result_upper_limit': 10},
-    # {'op': 'minus', 'result_on_top': True, 'result_upper_limit': 10},
-    # {'op': 'add', 'result_on_top': False, 'result_upper_limit': 10},
-    # {'op': 'minus', 'result_on_top': True, 'result_upper_limit': 10},
-    # {'op': 'add', 'result_on_top': False, 'result_upper_limit': 10},
+    {'op': 'minus', 'result_on_top': True, 'result_upper_limit': 10},
+    {'op': 'add', 'result_on_top': False, 'result_upper_limit': 10},
+    {'op': 'minus', 'result_on_top': True, 'result_upper_limit': 10},
+    {'op': 'add', 'result_on_top': False, 'result_upper_limit': 10},
+    {'op': 'minus', 'result_on_top': True, 'result_upper_limit': 10},
+    {'op': 'add', 'result_on_top': False, 'result_upper_limit': 10},
 ]
 
 # Weight of random number
@@ -75,6 +78,13 @@ RESULT_WEIGHT = {
 # --------------------------------------------------------------
 # CONST VARIABLES. DO NOT MODIFY!
 # --------------------------------------------------------------
+# for TEXT type
+DEFAULT_TEXT_ROWS = 4
+DEFAULT_TEXT_COLS = 6
+# for GOODS type
+DEFAULT_GOODS_ROWS = 3
+DEFAULT_GOODS_COLS = 4
+
 SLIDE_W, SLIDE_H = 10, 7.5
 # rect of one family
 FAMILY_W, FAMILY_H = 1.2, 1.5
@@ -99,12 +109,12 @@ NUMBER_MAX = _number_keys[-1]
 
 output_dir = "output"
 output_filename = output_dir + "/add-"+time.strftime("%Y%m%d%H%M%S", time.localtime())+".pptx"
-print(output_filename)
+# print(output_filename)
 
 #
 # Variables for goods
 #
-GOODS_FAMILY_W, GOODS_FAMILY_H = 3.0, 1.0
+GOODS_FAMILY_W, GOODS_FAMILY_H = 2.6, 0.8
 GOODS_MARGIN_W = round((SLIDE_W-COLS*GOODS_FAMILY_W)/(COLS+1), 2)
 GOODS_MARGIN_H = round((SLIDE_H-ROWS*GOODS_FAMILY_H)/(ROWS+1), 2)
 GOODS_BODY_RECT_TOP = GOODS_MARGIN_H
@@ -225,7 +235,7 @@ def new_add(slide_index, page_conf, **kwargs):
 
 
 def _draw_side(slide_index, slide, page_conf, **kwargs):
-    max_result = NUMBER_MAX if not 'result_upper_limit' in page_conf else page_conf['result_upper_limit']
+    max_result = NUMBER_MAX if 'result_upper_limit' not in page_conf else page_conf['result_upper_limit']
     max_result = min(max_result, NUMBER_MAX)
     print('slide {}, lower_limit is {}, result_upper_limit is {}'.format(slide_index, RESULT_LOWER_LIMIT, max_result))
     for i in range(0, ROWS):
@@ -278,20 +288,13 @@ def _cb_draw_family(resultOnTop, op, factor1, factor2, result, pos, slide):
             right_tx_left = family_left + (FAMILY_W - tx_width)
             right_tx_top = family_top + (FAMILY_H - tx_height)
 
-            # location for connector pic
-            _img_height = FAMILY_H - TEXT_RECT_SIZE[1]*2 - MARGIN_CONNECTOR*2
-            left_conn_from = {'x': family_left + TEXT_RECT_SIZE[0]/2,
-                              'y': family_top + (FAMILY_H - TEXT_RECT_SIZE[1])}
-            left_conn_to = {'x': family_left + FAMILY_W/2,
-                            'y': family_top + TEXT_RECT_SIZE[1]}
-            left_img = IMG_LB_RT
-            right_conn_from = {'x': family_left + FAMILY_W/2,
-                               'y': family_top + TEXT_RECT_SIZE[1]}
-            right_conn_to = {'x': family_left + (FAMILY_W - TEXT_RECT_SIZE[0]/2),
-                             'y': family_top + (FAMILY_H - TEXT_RECT_SIZE[1])}
-            right_img = IMG_LT_RB
-            _draw_connector(slide, left_conn_from, left_conn_to, _img_height, left_img, "to")
-            _draw_connector(slide, right_conn_from, right_conn_to, _img_height, right_img, "from")
+            # location for connector line
+            line_end_x = family_left + FAMILY_W / 2
+            line_end_y = family_top + tx_height + CONNECTOR_LINE_ADJUST
+            line_left_begin_x = family_left + tx_width/2
+            line_left_begin_y = family_top + (FAMILY_H - tx_height) - CONNECTOR_LINE_ADJUST
+            line_right_begin_x = family_left + (FAMILY_W - tx_width/2)
+            line_right_begin_y = family_top + (FAMILY_H - tx_height) - CONNECTOR_LINE_ADJUST
         else:
             tx_width = TEXT_RECT_SIZE[0]
             tx_height = TEXT_RECT_SIZE[1]
@@ -306,20 +309,19 @@ def _cb_draw_family(resultOnTop, op, factor1, factor2, result, pos, slide):
             right_tx_left = family_left + (FAMILY_W - tx_width)
             right_tx_top = family_top
 
-            # location for connector pic
-            _img_height = FAMILY_H - TEXT_RECT_SIZE[1] * 2 - MARGIN_CONNECTOR * 2
-            left_conn_from = {'x': family_left + TEXT_RECT_SIZE[0] / 2,
-                              'y': family_top + TEXT_RECT_SIZE[1]}
-            left_conn_to = {'x': family_left + FAMILY_W / 2,
-                            'y': family_top + (FAMILY_H - TEXT_RECT_SIZE[1])}
-            left_img = IMG_LT_RB
-            right_conn_from = {'x': family_left + FAMILY_W / 2,
-                               'y': family_top + (FAMILY_H - TEXT_RECT_SIZE[1])}
-            right_conn_to = {'x': family_left + (FAMILY_W - TEXT_RECT_SIZE[0] / 2),
-                             'y': family_top + TEXT_RECT_SIZE[1]}
-            right_img = IMG_LB_RT
-            _draw_connector(slide, left_conn_from, left_conn_to, _img_height, left_img, "to")
-            _draw_connector(slide, right_conn_from, right_conn_to, _img_height, right_img, "from")
+            # location for connector line
+            line_end_x = family_left + FAMILY_W / 2
+            line_end_y = family_top + (FAMILY_H - tx_height) - CONNECTOR_LINE_ADJUST
+            line_left_begin_x = family_left + tx_width / 2
+            line_left_begin_y = family_top + tx_height + CONNECTOR_LINE_ADJUST
+            line_right_begin_x = family_left + (FAMILY_W - tx_width / 2)
+            line_right_begin_y = family_top + tx_height + CONNECTOR_LINE_ADJUST
+
+        # connector line
+        _draw_straight_line(slide, line_left_begin_x, line_left_begin_y,
+                            line_end_x - CONNECTOR_LINE_ADJUST, line_end_y)
+        _draw_straight_line(slide, line_right_begin_x, line_right_begin_y,
+                            line_end_x + CONNECTOR_LINE_ADJUST, line_end_y)
 
         txt_result, txt_left, txt_right = '', factor1, factor2
         if op == 'minus':
@@ -350,6 +352,7 @@ def _cb_draw_family_goods(resultOnTop, op, factor1, factor2, result, pos, slide)
     """
     family_top = pos[0]
     family_left = pos[1]
+    img_path = GOODS_IMG_PATH[random.randint(0, len(GOODS_IMG_PATH)-1)]
 
     if op == 'add' or op == 'minus':
         # Draw result , left and right factor
@@ -395,6 +398,7 @@ def _cb_draw_family_goods(resultOnTop, op, factor1, factor2, result, pos, slide)
                             line_end_x - CONNECTOR_LINE_ADJUST, line_end_y)
         _draw_straight_line(slide, line_right_begin_x, line_right_begin_y,
                             line_end_x + CONNECTOR_LINE_ADJUST, line_end_y)
+
         txt_result, txt_left, txt_right = '', '', ''
         if op == 'minus':
             txt_result = result
@@ -417,19 +421,19 @@ def _cb_draw_family_goods(resultOnTop, op, factor1, factor2, result, pos, slide)
                     anchor_x=result_anchor_x, anchor_y=result_anchor_y,
                     anchor_side="bottom_middle" if resultOnTop is True else "top_middle",
                     is_text=False if txt_result == result else True,
-                    img=GOODS_IMG_PATH[0])
+                    img=img_path)
         # left
         _draw_goods(slide, number=txt_left,
                     anchor_x=left_child_anchor_x, anchor_y=left_child_anchor_y,
                     anchor_side="top_middle" if resultOnTop is True else "bottom_middle",
                     is_text=True if (txt_left == '' or txt_left == 0) else False,
-                    img=GOODS_IMG_PATH[0])
+                    img=img_path)
         # right
         _draw_goods(slide, number=txt_right,
                     anchor_x=right_child_anchor_x, anchor_y=right_child_anchor_y,
                     anchor_side="top_middle" if resultOnTop is True else "bottom_middle",
                     is_text=True if (txt_right == '' or txt_right == 0) else False,
-                    img=GOODS_IMG_PATH[0])
+                    img=img_path)
     elif op == 'multi':
         pass
     elif op == 'division':
@@ -622,28 +626,53 @@ def _init():
             i += 1
 
 
+def usage():
+    print('- Program: math.py')
+    print('- Author:  liuhao')
+    print('- Copyright © 2020')
+    print('')
+    print('math.py -t <test type>')
+    print('command:')
+    print('-t --type      text : display text for number')
+    print('               goods : display fruit for number')
+
+
 if __name__ == "__main__":
-    # slide0()
-    # slide1()
-    # slide2()
-
-    _init()
-    # new_slides(
-    #     fn_draw_family=_cb_draw_family,
-    #     body_rect_top=BODY_RECT_TOP, body_rect_left=BODY_RECT_LEFT,
-    #     family_h=FAMILY_H, family_w=FAMILY_W,
-    #     margin_h=MARGIN_H, margin_w=MARGIN_W,
-    #     result_min=1, factor_min=0
-    # )
-
     # test()
+    number_type = ''
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], "ht:", ["help", "type="])
+    except getopt.GetoptError:
+        usage()
+        sys.exit(2)
+    for opt, arg in opts:
+        if opt in ("-h", "--help"):
+            usage()
+            sys.exit()
+        elif opt in ("-t", "--type"):
+            number_type = arg
+        else:
+            usage()
+            sys.exit()
 
-    new_slides(
-        fn_draw_family=_cb_draw_family_goods,
-        body_rect_top=GOODS_BODY_RECT_TOP, body_rect_left=GOODS_BODY_RECT_LEFT,
-        family_h=GOODS_FAMILY_H, family_w=GOODS_FAMILY_W,
-        margin_h=GOODS_MARGIN_H, margin_w=GOODS_MARGIN_W,
-        result_min=1, factor_min=1
-    )
-
+    if len(opts) == 0:
+        usage()
+        sys.exit()
+    _init()
+    if number_type == 'text':
+        new_slides(
+            fn_draw_family=_cb_draw_family,
+            body_rect_top=BODY_RECT_TOP, body_rect_left=BODY_RECT_LEFT,
+            family_h=FAMILY_H, family_w=FAMILY_W,
+            margin_h=MARGIN_H, margin_w=MARGIN_W,
+            result_min=1, factor_min=0
+        )
+    elif number_type == 'goods':
+        new_slides(
+            fn_draw_family=_cb_draw_family_goods,
+            body_rect_top=GOODS_BODY_RECT_TOP, body_rect_left=GOODS_BODY_RECT_LEFT,
+            family_h=GOODS_FAMILY_H, family_w=GOODS_FAMILY_W,
+            margin_h=GOODS_MARGIN_H, margin_w=GOODS_MARGIN_W,
+            result_min=1, factor_min=1
+        )
     prs.save(output_filename)
