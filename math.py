@@ -11,6 +11,7 @@ from pptx.enum.text import MSO_AUTO_SIZE
 from pptx.enum.shapes import MSO_AUTO_SHAPE_TYPE as MSO_SHAPE
 from pptx.enum.shapes import MSO_CONNECTOR_TYPE as MSO_CONNECTOR
 from pptx.enum.dml import MSO_FILL_TYPE as MSO_FILL
+from pptx.enum.dml import MSO_LINE_DASH_STYLE as MSO_LINE
 
 '''
 1. Remove placeholders in slide
@@ -49,10 +50,10 @@ PAGE_CONTENT_STYLE = [
     {'op': 'add', 'result_on_top': True, 'result_upper_limit': 10},
     {'op': 'minus', 'result_on_top': True, 'result_upper_limit': 10},
     {'op': 'add', 'result_on_top': False, 'result_upper_limit': 10},
-    {'op': 'minus', 'result_on_top': True, 'result_upper_limit': 10},
-    {'op': 'add', 'result_on_top': False, 'result_upper_limit': 10},
-    {'op': 'minus', 'result_on_top': True, 'result_upper_limit': 10},
-    {'op': 'add', 'result_on_top': False, 'result_upper_limit': 10},
+    #{'op': 'minus', 'result_on_top': True, 'result_upper_limit': 10},
+    #{'op': 'add', 'result_on_top': False, 'result_upper_limit': 10},
+    #{'op': 'minus', 'result_on_top': True, 'result_upper_limit': 10},
+    #{'op': 'add', 'result_on_top': False, 'result_upper_limit': 10},
 ]
 
 # Weight of random number
@@ -262,6 +263,7 @@ def _draw_side(slide_index, slide, page_conf, **kwargs):
             #     (BODY_RECT_TOP + (FAMILY_H + MARGIN_H) * i, BODY_RECT_LEFT + (FAMILY_W + MARGIN_W) * j),
             #     slide
             # )
+    _draw_textbox(slide, SLIDE_W-0.3, SLIDE_H-0.3, 0.2, 0.2, slide_index+1, RGBColor(128, 128, 128), True)
 
 
 # --------------------------------------------------------------
@@ -517,18 +519,21 @@ def test():
 # --------------------------------------------------------------
 # Common functions
 # --------------------------------------------------------------
-def _draw_textbox(slide, left, top, width, height, text):
+def _draw_textbox(slide, left, top, width, height, text, text_color=RGBColor(0, 0, 0), dash=False):
     txBox = slide.shapes.add_textbox(
         Inches(left),
         Inches(top),
         Inches(width),
         Inches(height))
     txBox.text = str(text)
+    if dash is True:
+        txBox.line.dash_style = MSO_LINE.ROUND_DOT
     txBox.line.color.rgb = RGBColor(0, 0, 0)
     txBox.line.width = Pt(1.0)
     txBox.text_frame.auto_size = MSO_AUTO_SIZE.TEXT_TO_FIT_SHAPE
     txBox.text_frame.paragraphs[0].alignment = PP_ALIGN.CENTER
     txBox.text_frame.vertical_anchor = MSO_ANCHOR.MIDDLE
+    txBox.text_frame.paragraphs[0].font.color.rgb = text_color
     # txBox.fill.solid()
     # txBox.fill.fore_color.rgb = RGBColor(0, 0, 0)
 
