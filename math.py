@@ -670,7 +670,7 @@ if __name__ == "__main__":
             body_rect_top=BODY_RECT_TOP, body_rect_left=BODY_RECT_LEFT,
             family_h=FAMILY_H, family_w=FAMILY_W,
             margin_h=MARGIN_H, margin_w=MARGIN_W,
-            result_min=1, factor_min=0
+            result_min=3, factor_min=1
         )
     elif number_type == 'goods':
         new_slides(
