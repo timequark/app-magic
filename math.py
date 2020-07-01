@@ -40,8 +40,8 @@ Width & Height of one slide is about 10 & 7.5, and width : height is 4 : 3
 # --------------------------------------------------------------
 # for TEXT type ROWS,COLS => 4, 5
 # for GOODS type ROWS, COLS => 3, 4
-ROWS = 4
-COLS = 5
+ROWS = 3
+COLS = 4
 RESULT_LOWER_LIMIT = 1
 PAGE_CONTENT_STYLE = [
     {'op': 'minus', 'result_on_top': True, 'result_upper_limit': 10},
@@ -66,10 +66,10 @@ RESULT_WEIGHT = {
     #1: 1,
     #2: 1,
     3: 2,
-    4: 3,
+    4: 2,
     #5: 3,
     6: 4,
-    7: 6,
+    7: 4,
     #8: 5,
     #9: 5,
     10: 6,
@@ -238,10 +238,10 @@ def new_add(slide_index, page_conf, **kwargs):
 def _draw_side(slide_index, slide, page_conf, **kwargs):
     max_result = NUMBER_MAX if 'result_upper_limit' not in page_conf else page_conf['result_upper_limit']
     max_result = min(max_result, NUMBER_MAX)
-    print('slide {}, lower_limit is {}, result_upper_limit is {}'.format(slide_index, RESULT_LOWER_LIMIT, max_result))
+    print('slide {}, lower_limit is {}, result_upper_limit is {}'.format(slide_index, kwargs['result_min'], max_result))
     for i in range(0, ROWS):
         for j in range(0, COLS):
-            index_a = RESULT_RATIO_MAP.index(RESULT_LOWER_LIMIT)
+            index_a = RESULT_RATIO_MAP.index(kwargs['result_min'])
             index_b = RESULT_RATIO_MAP.index(max_result)
             result = _rand_result(kwargs['result_min'], index_a, index_b)
             factor1 = _rand_integer((kwargs['factor_min'], result))
@@ -678,6 +678,6 @@ if __name__ == "__main__":
             body_rect_top=GOODS_BODY_RECT_TOP, body_rect_left=GOODS_BODY_RECT_LEFT,
             family_h=GOODS_FAMILY_H, family_w=GOODS_FAMILY_W,
             margin_h=GOODS_MARGIN_H, margin_w=GOODS_MARGIN_W,
-            result_min=1, factor_min=1
+            result_min=3, factor_min=1
         )
     prs.save(output_filename)
