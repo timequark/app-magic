@@ -40,16 +40,16 @@ Width & Height of one slide is about 10 & 7.5, and width : height is 4 : 3
 # --------------------------------------------------------------
 # for TEXT type ROWS,COLS => 4, 5
 # for GOODS type ROWS, COLS => 3, 4
-ROWS = 3
-COLS = 4
-RESULT_LOWER_LIMIT = 1
+ROWS = 4
+COLS = 5
+
 PAGE_CONTENT_STYLE = [
     {'op': 'minus', 'result_on_top': True, 'result_upper_limit': 10},
     {'op': 'add', 'result_on_top': False, 'result_upper_limit': 10},
     {'op': 'minus', 'result_on_top': False, 'result_upper_limit': 10},
     {'op': 'add', 'result_on_top': True, 'result_upper_limit': 10},
     {'op': 'minus', 'result_on_top': True, 'result_upper_limit': 10},
-    {'op': 'add', 'result_on_top': False, 'result_upper_limit': 10},
+    {'op': 'minus', 'result_on_top': False, 'result_upper_limit': 10},
     #{'op': 'minus', 'result_on_top': True, 'result_upper_limit': 10},
     #{'op': 'add', 'result_on_top': False, 'result_upper_limit': 10},
     #{'op': 'minus', 'result_on_top': True, 'result_upper_limit': 10},
@@ -72,7 +72,7 @@ RESULT_WEIGHT = {
     7: 4,
     #8: 5,
     #9: 5,
-    10: 6,
+    10: 4,
     #20: 8
 }
 
@@ -242,7 +242,7 @@ def _draw_side(slide_index, slide, page_conf, **kwargs):
     for i in range(0, ROWS):
         for j in range(0, COLS):
             index_a = RESULT_RATIO_MAP.index(kwargs['result_min'])
-            index_b = RESULT_RATIO_MAP.index(max_result)
+            index_b = len(RESULT_RATIO_MAP)-1-RESULT_RATIO_MAP[::-1].index(max_result)
             result = _rand_result(kwargs['result_min'], index_a, index_b)
             factor1 = _rand_integer((kwargs['factor_min'], result))
             factor2 = result - factor1
